@@ -1,4 +1,6 @@
 LIBTORCH ?= linux
+CC       ?= clang
+CXX      ?= clang++
 
 all : microbench
 
@@ -17,7 +19,7 @@ libtorch.local : ../pytorch/torch
 	ln -s $< libtorch
 
 microbench : microbench.cpp libtorch.$(LIBTORCH)
-	g++ -std=c++14 -O3 \
+	$(CXX) -std=c++14 -O3 \
 	-I .. \
 	-I libtorch/include \
 	-I libtorch/include/torch/csrc/api/include \
