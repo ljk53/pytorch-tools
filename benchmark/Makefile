@@ -1,15 +1,22 @@
+LIBTORCH ?= linux
+
 all : microbench
 
-libtorch-shared-with-deps-1.6.0%2Bcpu.zip :
+linux/libtorch :
 	curl -LsO 'https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.6.0%2Bcpu.zip'
+	unzip -qq -o libtorch-shared-with-deps-1.6.0%2Bcpu.zip -d linux
 
-linux/libtorch : libtorch-shared-with-deps-1.6.0%2Bcpu.zip
-	unzip -qq -o $< -d linux
+libtorch.linux : linux/libtorch
+	@echo "Use downloaded libtorch"
+	rm -f libtorch
+	ln -s $< libtorch
 
-libtorch : linux/libtorch
-	ln -s $< $@
+libtorch.local : ../pytorch/torch
+	@echo "Use locally built PyTorch"
+	rm -f libtorch
+	ln -s $< libtorch
 
-microbench : microbench.cpp libtorch
+microbench : microbench.cpp libtorch.$(LIBTORCH)
 	g++ -std=c++14 -O3 \
 	-I .. \
 	-I libtorch/include \
