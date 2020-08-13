@@ -149,6 +149,7 @@ if __name__ == "__main__":
 
     for N in [64, 256]:
         print()
-        mm_sN_nograd_outplace(1000, N)
-        mm_sN_nograd(1000, N)
-        mm_sN_grad(1000, N)
+        count = int(1024 / N) ** 3 * 10
+        mm_sN_nograd_outplace(count, N)
+        mm_sN_nograd(count, N)
+        mm_sN_grad(count, N)

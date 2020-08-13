@@ -124,9 +124,10 @@ int main() {
 
   for (int N : {64, 256}) {
     std::cout << std::endl;
-    mm_sN_nograd_novar_outplace(1000, N);
-    mm_sN_nograd_novar(1000, N);
-    mm_sN_grad(1000, N);
+    int count = (1024 / N) * (1024 / N) * (1024 / N) * 10;
+    mm_sN_nograd_novar_outplace(count, N);
+    mm_sN_nograd_novar(count, N);
+    mm_sN_grad(count, N);
   }
 
   return 0;
