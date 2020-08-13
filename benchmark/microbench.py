@@ -3,13 +3,13 @@ import torch
 
 
 def report_header():
-    print("{:>35}\t{:>15}\t{:>15}".format(
+    print("{:>35}{:>25}{:>25}".format(
         "name", "samples/sec", "ns"))
 
 
 def report(name, start, count):
     duration = time.time() - start
-    print("{:>35}\t{:>15.2f}\t{:>15.2f}".format(
+    print("{:>35}{:>25.2f}{:>25.2f}".format(
         name, count / duration, duration / count * 1e9))
 
 

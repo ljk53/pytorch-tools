@@ -7,8 +7,8 @@ using namespace std::chrono;
 
 void report_header() {
   std::cout << std::setw(35) << "name"
-            << "\t" << std::setw(15) << "samples/sec"
-            << "\t" << std::setw(15) << "ns"
+            << std::setw(25) << "samples/sec"
+            << std::setw(25) << "ns"
             << std::endl;
 }
 
@@ -17,8 +17,8 @@ void report(const std::string& name, high_resolution_clock::time_point start, in
       duration_cast<duration<double>>(high_resolution_clock::now() - start);
   std::cout << std::setw(35) << std::fixed << std::setprecision(2)
             << name
-            << "\t" << std::setw(15) << count / time_span.count()
-            << "\t" << std::setw(15) << time_span.count() / count * 1e9
+            << std::setw(25) << count / time_span.count()
+            << std::setw(25) << time_span.count() / count * 1e9
             << std::endl;
 }
 
