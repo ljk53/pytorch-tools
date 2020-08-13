@@ -1,6 +1,7 @@
-LIBTORCH ?= linux
-CC       ?= clang
-CXX      ?= clang++
+LIBTORCH     ?= linux
+CC           ?= clang
+CXX          ?= clang++
+CXX11_ABI    ?= 0
 
 all : microbench
 
@@ -11,6 +12,10 @@ macos/libtorch :
 linux/libtorch :
 	curl -LsO 'https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.6.0%2Bcpu.zip'
 	unzip -qq -o libtorch-shared-with-deps-1.6.0%2Bcpu.zip -d linux
+
+rpi/libtorch :
+	curl -LsO 'https://github.com/ljk53/pytorch-rpi/raw/master/libtorch-rpi-cxx11-abi-shared-1.6.0.zip'
+	unzip -qq -o libtorch-rpi-cxx11-abi-shared-1.6.0.zip -d rpi
 
 local/libtorch :
 	mkdir local
@@ -26,7 +31,7 @@ microbench : microbench.cpp $(LIBTORCH)/libtorch
 	-o $@ \
 	-Wl,-rpath,$(LIBTORCH)/libtorch/lib \
 	-lc10 -ltorch -ltorch_cpu \
-	-D_GLIBCXX_USE_CXX11_ABI=0
+	-D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
 
 clean:
 	rm -rf microbench linux libtorch*
