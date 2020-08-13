@@ -20,6 +20,20 @@ LIBTORCH=rpi CXX11_ABI=1 ./run.sh
 LIBTORCH=local ./run.sh
 ```
 
+## Metric Keywords
+
+The name of each row is the concatenation of keywords in the following table.
+
+| Keyword  | Meaning                                            |
+|----------|----------------------------------------------------|
+| sN       | Input size, e.g.: "s1" - size-1-tensor             |
+| scripted | TorchScript version                                |
+| nograd   | Skip autograd functionality (with torch.no_grad()) |
+| novar    | Skip autograd dispatching (only togglable in C++)  |
+| outplace | Output result into pre-allocated tensor.           |
+
+For example, "mm_s64_nograd_outplace" measures the performance of multiplying two 64x64 matrices, skip autograd, write result into pre-allocated tensor.
+
 ## Measures
 
 ### MacBook Pro 10.15.6 | CPU: Topology: 8-Core model: Intel Core i7-7920HQ bits: 64 type: MCP L2 cache: 256 KiB  Speed: 3100 MHz
