@@ -247,3 +247,80 @@ MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0)
                      mm_s256_nograd                  2039.08                490418.45
                        mm_s256_grad                  2129.74                469540.80
 ```
+
+### WSL Linux 4.19.104-microsoft-standard | CPU: Topology: Dual Core model: Intel Core m3-7Y30 bits: 64 type: MT MCP L2 cache: 4096 KiB Speed: 1608 MHz
+```
+==========================================================================================
+C++
+==========================================================================================
+                               name              samples/sec                       ns
+       add_s1_nograd_outplace_novar               1157832.75                   863.68
+             add_s1_nograd_outplace               1037407.89                   963.94
+                      add_s1_nograd                743160.75                  1345.60
+                        add_s1_grad                380720.31                  2626.60
+
+       mm_s64_nograd_novar_outplace                128542.21                  7779.55
+                mm_s64_nograd_novar                110591.42                  9042.29
+                        mm_s64_grad                 61585.19                 16237.67
+
+      mm_s256_nograd_novar_outplace                  3773.14                265030.94
+               mm_s256_nograd_novar                  2958.10                338054.84
+                       mm_s256_grad                  3221.84                310381.72
+
+==========================================================================================
+Python (1.6.0)
+==========================================================================================
+                               name              samples/sec                       ns
+    add_s1_nograd_outplace_scripted                720470.25                  1387.98
+             add_s1_nograd_scripted                347123.82                  2880.82
+               add_s1_grad_scripted                246266.58                  4060.64
+
+             add_s1_nograd_outplace                553081.42                  1808.05
+                      add_s1_nograd                381161.76                  2623.56
+                        add_s1_grad                220348.33                  4538.27
+
+             mm_s64_nograd_outplace                111672.67                  8954.74
+                      mm_s64_nograd                 71603.25                 13965.85
+                        mm_s64_grad                 58694.64                 17037.33
+
+            mm_s256_nograd_outplace                  3323.33                300902.87
+                     mm_s256_nograd                  3529.01                283365.70
+                       mm_s256_grad                  2657.08                376353.41
+
+==========================================================================================
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 C++
+==========================================================================================
+                               name              samples/sec                       ns
+       add_s1_nograd_outplace_novar               1207753.68                   827.98
+             add_s1_nograd_outplace               1055150.39                   947.73
+                      add_s1_nograd                722329.73                  1384.41
+                        add_s1_grad                355638.87                  2811.84
+
+       mm_s64_nograd_novar_outplace                121615.82                  8222.61
+                mm_s64_nograd_novar                107868.96                  9270.51
+                        mm_s64_grad                 79957.66                 12506.62
+
+      mm_s256_nograd_novar_outplace                  2120.34                471622.19
+               mm_s256_nograd_novar                  2132.19                469000.31
+                       mm_s256_grad                  2086.07                479370.78
+
+==========================================================================================
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0)
+==========================================================================================
+                               name              samples/sec                       ns
+    add_s1_nograd_outplace_scripted                752265.96                  1329.32
+             add_s1_nograd_scripted                585588.09                  1707.68
+               add_s1_grad_scripted                242731.54                  4119.78
+
+             add_s1_nograd_outplace                588793.24                  1698.39
+                      add_s1_nograd                390284.35                  2562.23
+                        add_s1_grad                219935.95                  4546.78
+
+             mm_s64_nograd_outplace                102837.63                  9724.07
+                      mm_s64_nograd                 87392.58                 11442.62
+                        mm_s64_grad                 65288.36                 15316.66
+
+            mm_s256_nograd_outplace                  2103.06                475498.66
+                     mm_s256_nograd                  2035.33                491320.71
+                       mm_s256_grad                  2104.07                475269.56
+```
