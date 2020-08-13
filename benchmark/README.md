@@ -20,6 +20,11 @@ LIBTORCH=rpi CXX11_ABI=1 ./run.sh
 LIBTORCH=local ./run.sh
 ```
 
+### Aggregate measures in this README.md file
+```bash
+./aggregates.sh
+```
+
 ## Metric Keywords
 
 The name of each row is the concatenation of keywords in the following table.
