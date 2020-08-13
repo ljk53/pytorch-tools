@@ -10,6 +10,11 @@
 LIBTORCH=macos ./run.sh
 ```
 
+### Run on Raspberry Pi
+```bash
+LIBTORCH=rpi CXX11_ABI=1 ./run.sh
+```
+
 ### Run with locally built LibTorch
 ```bash
 LIBTORCH=local ./run.sh
@@ -323,4 +328,81 @@ MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0)
             mm_s256_nograd_outplace                  2103.06                475498.66
                      mm_s256_nograd                  2035.33                491320.71
                        mm_s256_grad                  2104.07                475269.56
+```
+
+### Raspberry Pi 4 Linux 5.4.51-v7l+ #1327 | CPU: Topology: Quad Core model: ARMv7 v7l variant: cortex-a72 bits: 32 type: MCP Speed: 1500 MHz min/max: 600/1500 MHz
+```
+==========================================================================================
+C++
+==========================================================================================
+                               name              samples/sec                       ns
+       add_s1_nograd_outplace_novar                290512.88                  3442.19
+             add_s1_nograd_outplace                236918.15                  4220.87
+                      add_s1_nograd                137170.65                  7290.19
+                        add_s1_grad                 69173.50                 14456.40
+
+       mm_s64_nograd_novar_outplace                  2277.92                438996.33
+                mm_s64_nograd_novar                  2254.80                443498.63
+                        mm_s64_grad                  2177.88                459161.82
+
+      mm_s256_nograd_novar_outplace                    34.83              28706885.04
+               mm_s256_nograd_novar                    34.81              28726573.32
+                       mm_s256_grad                    35.11              28479562.97
+
+==========================================================================================
+Python (1.6.0a0+b31f58d)
+==========================================================================================
+                               name              samples/sec                       ns
+    add_s1_nograd_outplace_scripted                148738.03                  6723.23
+             add_s1_nograd_scripted                103788.81                  9634.95
+               add_s1_grad_scripted                 47433.26                 21082.25
+
+             add_s1_nograd_outplace                118752.27                  8420.89
+                      add_s1_nograd                 70153.88                 14254.38
+                        add_s1_grad                 45805.02                 21831.67
+
+             mm_s64_nograd_outplace                  2266.38                441232.06
+                      mm_s64_nograd                  2231.85                448058.12
+                        mm_s64_grad                  2159.71                463026.15
+
+            mm_s256_nograd_outplace                    34.77              28762320.43
+                     mm_s256_nograd                    34.90              28649732.47
+                       mm_s256_grad                    34.70              28815683.72
+
+==========================================================================================
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 C++
+==========================================================================================
+                               name              samples/sec                       ns
+       add_s1_nograd_outplace_novar                294777.29                  3392.39
+             add_s1_nograd_outplace                245157.30                  4079.01
+                      add_s1_nograd                140475.52                  7118.68
+                        add_s1_grad                 68450.60                 14609.08
+
+       mm_s64_nograd_novar_outplace                  2229.72                448486.08
+                mm_s64_nograd_novar                  2208.35                452827.33
+                        mm_s64_grad                  2137.29                467881.74
+
+      mm_s256_nograd_novar_outplace                    34.91              28647558.56
+               mm_s256_nograd_novar                    34.90              28651011.17
+                       mm_s256_grad                    35.04              28539716.73
+
+==========================================================================================
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0a0+b31f58d)
+==========================================================================================
+                               name              samples/sec                       ns
+    add_s1_nograd_outplace_scripted                171189.37                  5841.48
+             add_s1_nograd_scripted                105548.20                  9474.34
+               add_s1_grad_scripted                 48773.34                 20503.00
+
+             add_s1_nograd_outplace                113732.86                  8792.53
+                      add_s1_nograd                 72117.80                 13866.20
+                        add_s1_grad                 42644.15                 23449.87
+
+             mm_s64_nograd_outplace                  2268.44                440832.54
+                      mm_s64_nograd                  2232.76                447875.20
+                        mm_s64_grad                  2168.17                461219.39
+
+            mm_s256_nograd_outplace                    34.90              28649804.37
+                     mm_s256_nograd                    34.93              28631541.13
+                       mm_s256_grad                    32.66              30618404.60
 ```
