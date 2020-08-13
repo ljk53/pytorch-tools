@@ -39,7 +39,7 @@ The name of each row is the concatenation of keywords in the following table.
 
 For example, "mm_s64_nograd_outplace" measures the performance of multiplying two 64x64 matrices, skip autograd, write result into pre-allocated tensor.
 
-## Observations
+## Observations (see [raw data](#benchmark-results) below)
 
 ### Autograd Dispatching Cost (simple add case)
 
