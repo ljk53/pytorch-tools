@@ -27,7 +27,7 @@ cat README.md | awk -f <(cat - <<-'EOF'
   duration[key] += $3
 }
 
-function compare(avg, _keyword, _replace, comment) {
+function compare(avg, _keyword, _replace, comment, reverse) {
   split(_keyword, keywords, ",")
   split(_replace, replaces, ",")
 
@@ -43,6 +43,9 @@ function compare(avg, _keyword, _replace, comment) {
     }
     if (matched) {
       if (other in avg) {
+        if (reverse) {
+          tmp = k; k = other; other = tmp;
+        }
         printf "%-30s\t%40s\t%10.2f ns\t%10.0f%%\n", comment, other, avg[other] - avg[k], (avg[other] - avg[k]) / avg[k] * 100
       }
     }
@@ -53,11 +56,11 @@ END {
   for (k in count) {
     avg[k] = duration[k] / count[k]
   }
-  compare(avg, "_novar", "", "Autograd Dispatching Cost")
-  compare(avg, "_outplace", "", "Output Allocation Cost")
-  compare(avg, "_nograd", "_grad", "Autograd Cost")
-  compare(avg, "_scripted", "", "TorchScript v.s. Python")
-  compare(avg, "cpp", "py", "CPP v.s. Python")
-  compare(avg, "py,_scripted", "cpp,", "TorchScript v.s. CPP")
+  compare(avg, "_novar", "", "Autograd Dispatching Cost", 0)
+  compare(avg, "_outplace", "", "Output Allocation Cost", 0)
+  compare(avg, "_nograd", "_grad", "Autograd Cost", 0)
+  compare(avg, "_scripted", "", "Python v.s. TorchScript", 0)
+  compare(avg, "cpp", "py", "Python v.s. CPP", 0)
+  compare(avg, "py,_scripted", "cpp,", "TorchScript v.s. CPP", 1)
 }
 EOF) | sort -t$'\t' -k3 -n | sort -t$'\t' -k1,1 -s
