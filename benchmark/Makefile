@@ -2,6 +2,7 @@ LIBTORCH     ?= linux
 CC           ?= clang
 CXX          ?= clang++
 CXX11_ABI    ?= 0
+PYTORCH      ?= ../../pytorch
 
 all : microbench
 
@@ -19,7 +20,7 @@ rpi/libtorch :
 
 local/libtorch :
 	mkdir local
-	ln -s ../pytorch/torch local/libtorch
+	ln -s $(PYTORCH)/torch local/libtorch
 
 microbench : microbench.cpp $(LIBTORCH)/libtorch
 	$(CXX) -std=c++14 -O3 \
