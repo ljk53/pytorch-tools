@@ -15,8 +15,8 @@ linux/libtorch :
 	unzip -qq -o libtorch-shared-with-deps-1.6.0%2Bcpu.zip -d linux
 
 rpi/libtorch :
-	curl -LsO 'https://github.com/ljk53/pytorch-rpi/raw/master/libtorch-rpi-cxx11-abi-shared-1.6.0.zip'
-	unzip -qq -o libtorch-rpi-cxx11-abi-shared-1.6.0.zip -d rpi
+	curl -LsO 'https://github.com/ljk53/pytorch-rpi/raw/master/libtorch-rpi-shared-without-deps-1.6.0.zip'
+	unzip -qq -o libtorch-rpi-shared-without-deps-1.6.0.zip -d rpi
 
 local/libtorch :
 	mkdir local

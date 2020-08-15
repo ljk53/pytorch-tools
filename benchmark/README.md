@@ -489,73 +489,73 @@ MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0)
 C++
 ==========================================================================================
                                name              samples/sec                       ns
-       add_s1_nograd_outplace_novar                290512.88                  3442.19
-             add_s1_nograd_outplace                236918.15                  4220.87
-                      add_s1_nograd                137170.65                  7290.19
-                        add_s1_grad                 69173.50                 14456.40
+       add_s1_nograd_outplace_novar                268457.54                  3724.98
+             add_s1_nograd_outplace                245540.52                  4072.65
+                      add_s1_nograd                141569.93                  7063.65
+                        add_s1_grad                 68228.98                 14656.53
 
-       mm_s64_nograd_novar_outplace                  2277.92                438996.33
-                mm_s64_nograd_novar                  2254.80                443498.63
-                        mm_s64_grad                  2177.88                459161.82
+       mm_s64_nograd_novar_outplace                  6753.80                148064.87
+                mm_s64_nograd_novar                  6530.55                153126.36
+                        mm_s64_grad                  5867.28                170436.73
 
-      mm_s256_nograd_novar_outplace                    34.83              28706885.04
-               mm_s256_nograd_novar                    34.81              28726573.32
-                       mm_s256_grad                    35.11              28479562.97
+      mm_s256_nograd_novar_outplace                   355.58               2812271.38
+               mm_s256_nograd_novar                   115.15               8683984.64
+                       mm_s256_grad                    68.45              14609504.62
 
 ==========================================================================================
 Python (1.6.0a0+b31f58d)
 ==========================================================================================
                                name              samples/sec                       ns
-    add_s1_nograd_outplace_scripted                148738.03                  6723.23
-             add_s1_nograd_scripted                103788.81                  9634.95
-               add_s1_grad_scripted                 47433.26                 21082.25
+    add_s1_nograd_outplace_scripted                173160.64                  5774.98
+             add_s1_nograd_scripted                110560.65                  9044.81
+               add_s1_grad_scripted                 47782.23                 20928.28
 
-             add_s1_nograd_outplace                118752.27                  8420.89
-                      add_s1_nograd                 70153.88                 14254.38
-                        add_s1_grad                 45805.02                 21831.67
+             add_s1_nograd_outplace                119729.91                  8352.13
+                      add_s1_nograd                 66702.82                 14991.87
+                        add_s1_grad                 41910.41                 23860.42
 
-             mm_s64_nograd_outplace                  2266.38                441232.06
-                      mm_s64_nograd                  2231.85                448058.12
-                        mm_s64_grad                  2159.71                463026.15
+             mm_s64_nograd_outplace                  6476.25                154410.34
+                      mm_s64_nograd                  6043.35                165471.26
+                        mm_s64_grad                  5561.24                179816.07
 
-            mm_s256_nograd_outplace                    34.77              28762320.43
-                     mm_s256_nograd                    34.90              28649732.47
-                       mm_s256_grad                    34.70              28815683.72
+            mm_s256_nograd_outplace                   180.21               5548988.28
+                     mm_s256_nograd                   133.61               7484726.61
+                       mm_s256_grad                   151.64               6594630.33
 
 ==========================================================================================
 MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 C++
 ==========================================================================================
                                name              samples/sec                       ns
-       add_s1_nograd_outplace_novar                294777.29                  3392.39
-             add_s1_nograd_outplace                245157.30                  4079.01
-                      add_s1_nograd                140475.52                  7118.68
-                        add_s1_grad                 68450.60                 14609.08
+       add_s1_nograd_outplace_novar                273758.63                  3652.85
+             add_s1_nograd_outplace                247652.15                  4037.92
+                      add_s1_nograd                145477.95                  6873.89
+                        add_s1_grad                 72019.59                 13885.11
 
-       mm_s64_nograd_novar_outplace                  2229.72                448486.08
-                mm_s64_nograd_novar                  2208.35                452827.33
-                        mm_s64_grad                  2137.29                467881.74
+       mm_s64_nograd_novar_outplace                  6736.04                148455.24
+                mm_s64_nograd_novar                  6523.60                153289.66
+                        mm_s64_grad                  5900.11                169488.30
 
-      mm_s256_nograd_novar_outplace                    34.91              28647558.56
-               mm_s256_nograd_novar                    34.90              28651011.17
-                       mm_s256_grad                    35.04              28539716.73
+      mm_s256_nograd_novar_outplace                   108.19               9243243.86
+               mm_s256_nograd_novar                   107.09               9337744.25
+                       mm_s256_grad                   109.14               9162856.26
 
 ==========================================================================================
 MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0a0+b31f58d)
 ==========================================================================================
                                name              samples/sec                       ns
-    add_s1_nograd_outplace_scripted                171189.37                  5841.48
-             add_s1_nograd_scripted                105548.20                  9474.34
-               add_s1_grad_scripted                 48773.34                 20503.00
+    add_s1_nograd_outplace_scripted                153676.13                  6507.19
+             add_s1_nograd_scripted                104349.39                  9583.19
+               add_s1_grad_scripted                 49705.39                 20118.54
 
-             add_s1_nograd_outplace                113732.86                  8792.53
-                      add_s1_nograd                 72117.80                 13866.20
-                        add_s1_grad                 42644.15                 23449.87
+             add_s1_nograd_outplace                119044.35                  8400.23
+                      add_s1_nograd                 71429.00                 13999.92
+                        add_s1_grad                 41954.80                 23835.18
 
-             mm_s64_nograd_outplace                  2268.44                440832.54
-                      mm_s64_nograd                  2232.76                447875.20
-                        mm_s64_grad                  2168.17                461219.39
+             mm_s64_nograd_outplace                  6478.12                154365.83
+                      mm_s64_nograd                  6183.39                161723.70
+                        mm_s64_grad                  5615.12                178090.44
 
-            mm_s256_nograd_outplace                    34.90              28649804.37
-                     mm_s256_nograd                    34.93              28631541.13
-                       mm_s256_grad                    32.66              30618404.60
+            mm_s256_nograd_outplace                   107.95               9263914.08
+                     mm_s256_nograd                   105.06               9518714.99
+                       mm_s256_grad                   105.42               9486219.66
 ```
