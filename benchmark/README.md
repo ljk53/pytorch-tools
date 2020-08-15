@@ -41,66 +41,25 @@ For example, "mm_s64_nograd_outplace" measures the performance of multiplying tw
 
 ## Observations (see [raw data](#benchmark-results) below)
 
-### Autograd Dispatching Cost (simple add case)
+### Python v.s. CPP (simple add case)
 
-This is a type of PyTorch framework cost. Even with the Autograd mode turned off, it still dispatches operator calls into "Autograd Kernel", which checks the Autograd mode, only to find out it's disabled and does nothing in most cases.
-
-This cost can only be measured in C++ code, using the "AutoNonVariableTypeMode" guard.
-We measure it by comparing the latency of "XXX_novar" with that of "XXX".
-It varies from 48ns to 181ns, except for Raspberry Pi:
+For simple add case (adding two size-1 tensors), PyTorch code seems to be 500ns ~ 2000ns slower than C++ code per operator call.
 ```
-Autograd Dispatching Cost     	   MacBookPro:cpp:add_s1_nograd_outplace	     48.67 ns	        10%
-Autograd Dispatching Cost     	        Linux:cpp:add_s1_nograd_outplace	     69.11 ns	        10%
-Autograd Dispatching Cost     	          WSL:cpp:add_s1_nograd_outplace	    110.01 ns	        13%
-Autograd Dispatching Cost     	       Ubuntu:cpp:add_s1_nograd_outplace	    181.13 ns	        16%
-Autograd Dispatching Cost     	 RaspberryPi4:cpp:add_s1_nograd_outplace	    732.65 ns	        21%
-```
-
-### Output Allocation Cost (simple add case)
-
-We measure the cost of allocating result tensor by comparing the latency of the simple add case "torch.add(a, b)" with that of the outplace version "torch.add(a, b, out=c)".
-Most samples fall into the range of 700ns ~ 1000ns, which seems to be the cost of allocating a size-1 tensor in PyTorch.
-```
-Output Allocation Cost        	                   WSL:cpp:add_s1_nograd	    409.17 ns	        43%
-Output Allocation Cost        	                 Linux:cpp:add_s1_nograd	    614.69 ns	        80%
-Output Allocation Cost        	    MacBookPro:py:add_s1_nograd_scripted	    708.29 ns	       103%
-Output Allocation Cost        	                Ubuntu:cpp:add_s1_nograd	    745.84 ns	        56%
-Output Allocation Cost        	        Ubuntu:py:add_s1_nograd_scripted	    747.36 ns	        44%
-Output Allocation Cost        	            MacBookPro:cpp:add_s1_nograd	    792.54 ns	       147%
-Output Allocation Cost        	             MacBookPro:py:add_s1_nograd	    798.71 ns	        80%
-Output Allocation Cost        	                    WSL:py:add_s1_nograd	    839.67 ns	        48%
-Output Allocation Cost        	           WSL:py:add_s1_nograd_scripted	    935.60 ns	        69%
-Output Allocation Cost        	                 Ubuntu:py:add_s1_nograd	    990.51 ns	        41%
-Output Allocation Cost        	         Linux:py:add_s1_nograd_scripted	   1206.43 ns	       114%
-Output Allocation Cost        	                  Linux:py:add_s1_nograd	   1427.27 ns	        74%
-Output Allocation Cost        	          RaspberryPi4:cpp:add_s1_nograd	   3054.49 ns	        74%
-Output Allocation Cost        	  RaspberryPi4:py:add_s1_nograd_scripted	   3272.29 ns	        52%
-Output Allocation Cost        	           RaspberryPi4:py:add_s1_nograd	   5453.58 ns	        63%
-```
-
-### Autograd Cost (simple add case)
-
-When input tensors have "requires_grad" set to true, it will do some extra work for each operator call to record the computation graph (for backprop). 
-
-We measure the cost by comparing the latency of `_nograd` version with that of `_grad` version.
-It varies from 1000ns to 2000ns for most cases.
-For some reason, TorchScript seems to be performing visibly worse in this case (2500ns ~ 2900ns).
-```
-Autograd Cost                 	              MacBookPro:cpp:add_s1_grad	   1150.06 ns	        86%
-Autograd Cost                 	                   Linux:cpp:add_s1_grad	   1309.20 ns	        95%
-Autograd Cost                 	               MacBookPro:py:add_s1_grad	   1344.34 ns	        75%
-Autograd Cost                 	                     WSL:cpp:add_s1_grad	   1354.22 ns	        99%
-Autograd Cost                 	                  Ubuntu:cpp:add_s1_grad	   1431.45 ns	        69%
-Autograd Cost                 	                    Linux:py:add_s1_grad	   1634.59 ns	        49%
-Autograd Cost                 	             WSL:py:add_s1_grad_scripted	   1795.96 ns	        78%
-Autograd Cost                 	                   Ubuntu:py:add_s1_grad	   1872.47 ns	        55%
-Autograd Cost                 	                      WSL:py:add_s1_grad	   1949.63 ns	        75%
-Autograd Cost                 	           Linux:py:add_s1_grad_scripted	   2584.05 ns	       114%
-Autograd Cost                 	          Ubuntu:py:add_s1_grad_scripted	   2769.63 ns	       113%
-Autograd Cost                 	      MacBookPro:py:add_s1_grad_scripted	   2868.69 ns	       205%
-Autograd Cost                 	            RaspberryPi4:cpp:add_s1_grad	   7328.31 ns	       102%
-Autograd Cost                 	             RaspberryPi4:py:add_s1_grad	   8580.48 ns	        61%
-Autograd Cost                 	    RaspberryPi4:py:add_s1_grad_scripted	  11237.98 ns	       118%
+Python v.s. CPP               	    MacBookPro:py:add_s1_nograd_outplace	    455.78 ns	        85%
+Python v.s. CPP               	             MacBookPro:py:add_s1_nograd	    461.95 ns	        35%
+Python v.s. CPP               	               MacBookPro:py:add_s1_grad	    656.22 ns	        26%
+Python v.s. CPP               	           WSL:py:add_s1_nograd_outplace	    797.38 ns	        83%
+Python v.s. CPP               	        Ubuntu:py:add_s1_nograd_outplace	   1100.70 ns	        83%
+Python v.s. CPP               	         Linux:py:add_s1_nograd_outplace	   1168.37 ns	       153%
+Python v.s. CPP               	                    WSL:py:add_s1_nograd	   1227.89 ns	        90%
+Python v.s. CPP               	                 Ubuntu:py:add_s1_nograd	   1345.36 ns	        65%
+Python v.s. CPP               	                   Ubuntu:py:add_s1_grad	   1786.38 ns	        51%
+Python v.s. CPP               	                      WSL:py:add_s1_grad	   1823.30 ns	        67%
+Python v.s. CPP               	                  Linux:py:add_s1_nograd	   1980.95 ns	       144%
+Python v.s. CPP               	                    Linux:py:add_s1_grad	   2306.35 ns	        86%
+Python v.s. CPP               	  RaspberryPi4:py:add_s1_nograd_outplace	   4456.77 ns	       107%
+Python v.s. CPP               	           RaspberryPi4:py:add_s1_nograd	   6855.86 ns	        95%
+Python v.s. CPP               	             RaspberryPi4:py:add_s1_grad	   8108.03 ns	        56%
 ```
 
 ### Python v.s. TorchScript (simple add case)
@@ -125,25 +84,66 @@ Python v.s. TorchScript       	  RaspberryPi4:py:add_s1_nograd_outplace	   2324.
 Python v.s. TorchScript       	           RaspberryPi4:py:add_s1_nograd	   4505.65 ns	        47%
 ```
 
-### Python v.s. CPP (simple add case)
+### Framework Cost - Autograd (simple add case)
 
-For simple add case, PyTorch code seems to be 500ns ~ 2000ns slower than C++ code per operator call.
+When input tensors have "requires_grad" set to true, it will do some extra work for each operator call to record the computation graph (for backprop). 
+
+We measure the cost by comparing the latency of `_nograd` version with that of `_grad` version.
+It varies from 1000ns to 2000ns for most cases.
+For some reason, TorchScript seems to be performing visibly worse in this case (2500ns ~ 2900ns).
 ```
-Python v.s. CPP               	    MacBookPro:py:add_s1_nograd_outplace	    455.78 ns	        85%
-Python v.s. CPP               	             MacBookPro:py:add_s1_nograd	    461.95 ns	        35%
-Python v.s. CPP               	               MacBookPro:py:add_s1_grad	    656.22 ns	        26%
-Python v.s. CPP               	           WSL:py:add_s1_nograd_outplace	    797.38 ns	        83%
-Python v.s. CPP               	        Ubuntu:py:add_s1_nograd_outplace	   1100.70 ns	        83%
-Python v.s. CPP               	         Linux:py:add_s1_nograd_outplace	   1168.37 ns	       153%
-Python v.s. CPP               	                    WSL:py:add_s1_nograd	   1227.89 ns	        90%
-Python v.s. CPP               	                 Ubuntu:py:add_s1_nograd	   1345.36 ns	        65%
-Python v.s. CPP               	                   Ubuntu:py:add_s1_grad	   1786.38 ns	        51%
-Python v.s. CPP               	                      WSL:py:add_s1_grad	   1823.30 ns	        67%
-Python v.s. CPP               	                  Linux:py:add_s1_nograd	   1980.95 ns	       144%
-Python v.s. CPP               	                    Linux:py:add_s1_grad	   2306.35 ns	        86%
-Python v.s. CPP               	  RaspberryPi4:py:add_s1_nograd_outplace	   4456.77 ns	       107%
-Python v.s. CPP               	           RaspberryPi4:py:add_s1_nograd	   6855.86 ns	        95%
-Python v.s. CPP               	             RaspberryPi4:py:add_s1_grad	   8108.03 ns	        56%
+Autograd Cost                 	              MacBookPro:cpp:add_s1_grad	   1150.06 ns	        86%
+Autograd Cost                 	                   Linux:cpp:add_s1_grad	   1309.20 ns	        95%
+Autograd Cost                 	               MacBookPro:py:add_s1_grad	   1344.34 ns	        75%
+Autograd Cost                 	                     WSL:cpp:add_s1_grad	   1354.22 ns	        99%
+Autograd Cost                 	                  Ubuntu:cpp:add_s1_grad	   1431.45 ns	        69%
+Autograd Cost                 	                    Linux:py:add_s1_grad	   1634.59 ns	        49%
+Autograd Cost                 	             WSL:py:add_s1_grad_scripted	   1795.96 ns	        78%
+Autograd Cost                 	                   Ubuntu:py:add_s1_grad	   1872.47 ns	        55%
+Autograd Cost                 	                      WSL:py:add_s1_grad	   1949.63 ns	        75%
+Autograd Cost                 	           Linux:py:add_s1_grad_scripted	   2584.05 ns	       114%
+Autograd Cost                 	          Ubuntu:py:add_s1_grad_scripted	   2769.63 ns	       113%
+Autograd Cost                 	      MacBookPro:py:add_s1_grad_scripted	   2868.69 ns	       205%
+Autograd Cost                 	            RaspberryPi4:cpp:add_s1_grad	   7328.31 ns	       102%
+Autograd Cost                 	             RaspberryPi4:py:add_s1_grad	   8580.48 ns	        61%
+Autograd Cost                 	    RaspberryPi4:py:add_s1_grad_scripted	  11237.98 ns	       118%
+```
+
+### Framework Cost - Autograd Dispatching (simple add case)
+
+This is a type of PyTorch framework cost. Even with the Autograd mode turned off, it still dispatches operator calls into "Autograd Kernel", which checks the Autograd mode, only to find out it's disabled and does nothing in most cases.
+
+This cost can only be measured in C++ code, using the "AutoNonVariableTypeMode" guard.
+We measure it by comparing the latency of "XXX_novar" with that of "XXX".
+It varies from 48ns to 181ns, except for Raspberry Pi:
+```
+Autograd Dispatching Cost     	   MacBookPro:cpp:add_s1_nograd_outplace	     48.67 ns	        10%
+Autograd Dispatching Cost     	        Linux:cpp:add_s1_nograd_outplace	     69.11 ns	        10%
+Autograd Dispatching Cost     	          WSL:cpp:add_s1_nograd_outplace	    110.01 ns	        13%
+Autograd Dispatching Cost     	       Ubuntu:cpp:add_s1_nograd_outplace	    181.13 ns	        16%
+Autograd Dispatching Cost     	 RaspberryPi4:cpp:add_s1_nograd_outplace	    732.65 ns	        21%
+```
+
+### Framework Cost - Output Allocation (simple add case)
+
+We measure the cost of allocating result tensor by comparing the latency of the simple add case "torch.add(a, b)" with that of the outplace version "torch.add(a, b, out=c)".
+Most samples fall into the range of 700ns ~ 1000ns, which seems to be the cost of allocating a size-1 tensor in PyTorch.
+```
+Output Allocation Cost        	                   WSL:cpp:add_s1_nograd	    409.17 ns	        43%
+Output Allocation Cost        	                 Linux:cpp:add_s1_nograd	    614.69 ns	        80%
+Output Allocation Cost        	    MacBookPro:py:add_s1_nograd_scripted	    708.29 ns	       103%
+Output Allocation Cost        	                Ubuntu:cpp:add_s1_nograd	    745.84 ns	        56%
+Output Allocation Cost        	        Ubuntu:py:add_s1_nograd_scripted	    747.36 ns	        44%
+Output Allocation Cost        	            MacBookPro:cpp:add_s1_nograd	    792.54 ns	       147%
+Output Allocation Cost        	             MacBookPro:py:add_s1_nograd	    798.71 ns	        80%
+Output Allocation Cost        	                    WSL:py:add_s1_nograd	    839.67 ns	        48%
+Output Allocation Cost        	           WSL:py:add_s1_nograd_scripted	    935.60 ns	        69%
+Output Allocation Cost        	                 Ubuntu:py:add_s1_nograd	    990.51 ns	        41%
+Output Allocation Cost        	         Linux:py:add_s1_nograd_scripted	   1206.43 ns	       114%
+Output Allocation Cost        	                  Linux:py:add_s1_nograd	   1427.27 ns	        74%
+Output Allocation Cost        	          RaspberryPi4:cpp:add_s1_nograd	   3054.49 ns	        74%
+Output Allocation Cost        	  RaspberryPi4:py:add_s1_nograd_scripted	   3272.29 ns	        52%
+Output Allocation Cost        	           RaspberryPi4:py:add_s1_nograd	   5453.58 ns	        63%
 ```
 
 ### Costs relative to larger workload
