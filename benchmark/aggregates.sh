@@ -2,6 +2,10 @@
 
 set -eu -o pipefail
 
+ROOT="$( cd "$(dirname "$0")"; pwd -P)"
+
+cd $ROOT
+
 cat README.md | awk -f <(cat - <<-'EOF'
 /###/ {
   cpu = $2
