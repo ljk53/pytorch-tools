@@ -2,6 +2,7 @@ LIBTORCH     ?= linux
 CC           ?= clang
 CXX          ?= clang++
 CXX11_ABI    ?= 0
+PYTORCH      ?= ../../pytorch
 
 all : microbench
 
@@ -14,12 +15,12 @@ linux/libtorch :
 	unzip -qq -o libtorch-shared-with-deps-1.6.0%2Bcpu.zip -d linux
 
 rpi/libtorch :
-	curl -LsO 'https://github.com/ljk53/pytorch-rpi/raw/master/libtorch-rpi-cxx11-abi-shared-1.6.0.zip'
-	unzip -qq -o libtorch-rpi-cxx11-abi-shared-1.6.0.zip -d rpi
+	curl -LsO 'https://github.com/ljk53/pytorch-rpi/raw/master/libtorch-rpi-shared-without-deps-1.6.0.zip'
+	unzip -qq -o libtorch-rpi-shared-without-deps-1.6.0.zip -d rpi
 
 local/libtorch :
 	mkdir local
-	ln -s ../pytorch/torch local/libtorch
+	ln -s $(PYTORCH)/torch local/libtorch
 
 microbench : microbench.cpp $(LIBTORCH)/libtorch
 	$(CXX) -std=c++14 -O3 \

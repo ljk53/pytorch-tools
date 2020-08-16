@@ -41,66 +41,25 @@ For example, "mm_s64_nograd_outplace" measures the performance of multiplying tw
 
 ## Observations (see [raw data](#benchmark-results) below)
 
-### Autograd Dispatching Cost (simple add case)
+### Python v.s. CPP (simple add case)
 
-This is a type of PyTorch framework cost. Even with the Autograd mode turned off, it still dispatches operator calls into "Autograd Kernel", which checks the Autograd mode, only to find out it's disabled and does nothing in most cases.
-
-This cost can only be measured in C++ code, using the "AutoNonVariableTypeMode" guard.
-We measure it by comparing the latency of "XXX_novar" with that of "XXX".
-It varies from 48ns to 181ns, except for Raspberry Pi:
+For simple add case (adding two size-1 tensors), PyTorch code seems to be 500ns ~ 2000ns slower than C++ code per operator call.
 ```
-Autograd Dispatching Cost     	   MacBookPro:cpp:add_s1_nograd_outplace	     48.67 ns	        10%
-Autograd Dispatching Cost     	        Linux:cpp:add_s1_nograd_outplace	     69.11 ns	        10%
-Autograd Dispatching Cost     	          WSL:cpp:add_s1_nograd_outplace	    110.01 ns	        13%
-Autograd Dispatching Cost     	       Ubuntu:cpp:add_s1_nograd_outplace	    181.13 ns	        16%
-Autograd Dispatching Cost     	 RaspberryPi4:cpp:add_s1_nograd_outplace	    732.65 ns	        21%
-```
-
-### Output Allocation Cost (simple add case)
-
-We measure the cost of allocating result tensor by comparing the latency of the simple add case "torch.add(a, b)" with that of the outplace version "torch.add(a, b, out=c)".
-Most samples fall into the range of 700ns ~ 1000ns, which seems to be the cost of allocating a size-1 tensor in PyTorch.
-```
-Output Allocation Cost        	                   WSL:cpp:add_s1_nograd	    409.17 ns	        43%
-Output Allocation Cost        	                 Linux:cpp:add_s1_nograd	    614.69 ns	        80%
-Output Allocation Cost        	    MacBookPro:py:add_s1_nograd_scripted	    708.29 ns	       103%
-Output Allocation Cost        	                Ubuntu:cpp:add_s1_nograd	    745.84 ns	        56%
-Output Allocation Cost        	        Ubuntu:py:add_s1_nograd_scripted	    747.36 ns	        44%
-Output Allocation Cost        	            MacBookPro:cpp:add_s1_nograd	    792.54 ns	       147%
-Output Allocation Cost        	             MacBookPro:py:add_s1_nograd	    798.71 ns	        80%
-Output Allocation Cost        	                    WSL:py:add_s1_nograd	    839.67 ns	        48%
-Output Allocation Cost        	           WSL:py:add_s1_nograd_scripted	    935.60 ns	        69%
-Output Allocation Cost        	                 Ubuntu:py:add_s1_nograd	    990.51 ns	        41%
-Output Allocation Cost        	         Linux:py:add_s1_nograd_scripted	   1206.43 ns	       114%
-Output Allocation Cost        	                  Linux:py:add_s1_nograd	   1427.27 ns	        74%
-Output Allocation Cost        	          RaspberryPi4:cpp:add_s1_nograd	   3054.49 ns	        74%
-Output Allocation Cost        	  RaspberryPi4:py:add_s1_nograd_scripted	   3272.29 ns	        52%
-Output Allocation Cost        	           RaspberryPi4:py:add_s1_nograd	   5453.58 ns	        63%
-```
-
-### Autograd Cost (simple add case)
-
-When input tensors have "requires_grad" set to true, it will do some extra work for each operator call to record the computation graph (for backprop). 
-
-We measure the cost by comparing the latency of `_nograd` version with that of `_grad` version.
-It varies from 1000ns to 2000ns for most cases.
-For some reason, TorchScript seems to be performing visibly worse in this case (2500ns ~ 2900ns).
-```
-Autograd Cost                 	              MacBookPro:cpp:add_s1_grad	   1150.06 ns	        86%
-Autograd Cost                 	                   Linux:cpp:add_s1_grad	   1309.20 ns	        95%
-Autograd Cost                 	               MacBookPro:py:add_s1_grad	   1344.34 ns	        75%
-Autograd Cost                 	                     WSL:cpp:add_s1_grad	   1354.22 ns	        99%
-Autograd Cost                 	                  Ubuntu:cpp:add_s1_grad	   1431.45 ns	        69%
-Autograd Cost                 	                    Linux:py:add_s1_grad	   1634.59 ns	        49%
-Autograd Cost                 	             WSL:py:add_s1_grad_scripted	   1795.96 ns	        78%
-Autograd Cost                 	                   Ubuntu:py:add_s1_grad	   1872.47 ns	        55%
-Autograd Cost                 	                      WSL:py:add_s1_grad	   1949.63 ns	        75%
-Autograd Cost                 	           Linux:py:add_s1_grad_scripted	   2584.05 ns	       114%
-Autograd Cost                 	          Ubuntu:py:add_s1_grad_scripted	   2769.63 ns	       113%
-Autograd Cost                 	      MacBookPro:py:add_s1_grad_scripted	   2868.69 ns	       205%
-Autograd Cost                 	            RaspberryPi4:cpp:add_s1_grad	   7328.31 ns	       102%
-Autograd Cost                 	             RaspberryPi4:py:add_s1_grad	   8580.48 ns	        61%
-Autograd Cost                 	    RaspberryPi4:py:add_s1_grad_scripted	  11237.98 ns	       118%
+Python v.s. CPP               	    MacBookPro:py:add_s1_nograd_outplace	    455.78 ns	        85%
+Python v.s. CPP               	             MacBookPro:py:add_s1_nograd	    461.95 ns	        35%
+Python v.s. CPP               	               MacBookPro:py:add_s1_grad	    656.22 ns	        26%
+Python v.s. CPP               	           WSL:py:add_s1_nograd_outplace	    797.38 ns	        83%
+Python v.s. CPP               	        Ubuntu:py:add_s1_nograd_outplace	   1100.70 ns	        83%
+Python v.s. CPP               	         Linux:py:add_s1_nograd_outplace	   1168.37 ns	       153%
+Python v.s. CPP               	                    WSL:py:add_s1_nograd	   1227.89 ns	        90%
+Python v.s. CPP               	                 Ubuntu:py:add_s1_nograd	   1345.36 ns	        65%
+Python v.s. CPP               	                   Ubuntu:py:add_s1_grad	   1786.38 ns	        51%
+Python v.s. CPP               	                      WSL:py:add_s1_grad	   1823.30 ns	        67%
+Python v.s. CPP               	                  Linux:py:add_s1_nograd	   1980.95 ns	       144%
+Python v.s. CPP               	                    Linux:py:add_s1_grad	   2306.35 ns	        86%
+Python v.s. CPP               	  RaspberryPi4:py:add_s1_nograd_outplace	   4456.77 ns	       107%
+Python v.s. CPP               	           RaspberryPi4:py:add_s1_nograd	   6855.86 ns	        95%
+Python v.s. CPP               	             RaspberryPi4:py:add_s1_grad	   8108.03 ns	        56%
 ```
 
 ### Python v.s. TorchScript (simple add case)
@@ -125,25 +84,66 @@ Python v.s. TorchScript       	  RaspberryPi4:py:add_s1_nograd_outplace	   2324.
 Python v.s. TorchScript       	           RaspberryPi4:py:add_s1_nograd	   4505.65 ns	        47%
 ```
 
-### Python v.s. CPP (simple add case)
+### Framework Cost - Autograd (simple add case)
 
-For simple add case, PyTorch code seems to be 500ns ~ 2000ns slower than C++ code per operator call.
+When input tensors have "requires_grad" set to true, it will do some extra work for each operator call to record the computation graph (for backprop). 
+
+We measure the cost by comparing the latency of `_nograd` version with that of `_grad` version.
+It varies from 1000ns to 2000ns for most cases.
+For some reason, TorchScript seems to be performing visibly worse in this case (2500ns ~ 2900ns).
 ```
-Python v.s. CPP               	    MacBookPro:py:add_s1_nograd_outplace	    455.78 ns	        85%
-Python v.s. CPP               	             MacBookPro:py:add_s1_nograd	    461.95 ns	        35%
-Python v.s. CPP               	               MacBookPro:py:add_s1_grad	    656.22 ns	        26%
-Python v.s. CPP               	           WSL:py:add_s1_nograd_outplace	    797.38 ns	        83%
-Python v.s. CPP               	        Ubuntu:py:add_s1_nograd_outplace	   1100.70 ns	        83%
-Python v.s. CPP               	         Linux:py:add_s1_nograd_outplace	   1168.37 ns	       153%
-Python v.s. CPP               	                    WSL:py:add_s1_nograd	   1227.89 ns	        90%
-Python v.s. CPP               	                 Ubuntu:py:add_s1_nograd	   1345.36 ns	        65%
-Python v.s. CPP               	                   Ubuntu:py:add_s1_grad	   1786.38 ns	        51%
-Python v.s. CPP               	                      WSL:py:add_s1_grad	   1823.30 ns	        67%
-Python v.s. CPP               	                  Linux:py:add_s1_nograd	   1980.95 ns	       144%
-Python v.s. CPP               	                    Linux:py:add_s1_grad	   2306.35 ns	        86%
-Python v.s. CPP               	  RaspberryPi4:py:add_s1_nograd_outplace	   4456.77 ns	       107%
-Python v.s. CPP               	           RaspberryPi4:py:add_s1_nograd	   6855.86 ns	        95%
-Python v.s. CPP               	             RaspberryPi4:py:add_s1_grad	   8108.03 ns	        56%
+Autograd Cost                 	              MacBookPro:cpp:add_s1_grad	   1150.06 ns	        86%
+Autograd Cost                 	                   Linux:cpp:add_s1_grad	   1309.20 ns	        95%
+Autograd Cost                 	               MacBookPro:py:add_s1_grad	   1344.34 ns	        75%
+Autograd Cost                 	                     WSL:cpp:add_s1_grad	   1354.22 ns	        99%
+Autograd Cost                 	                  Ubuntu:cpp:add_s1_grad	   1431.45 ns	        69%
+Autograd Cost                 	                    Linux:py:add_s1_grad	   1634.59 ns	        49%
+Autograd Cost                 	             WSL:py:add_s1_grad_scripted	   1795.96 ns	        78%
+Autograd Cost                 	                   Ubuntu:py:add_s1_grad	   1872.47 ns	        55%
+Autograd Cost                 	                      WSL:py:add_s1_grad	   1949.63 ns	        75%
+Autograd Cost                 	           Linux:py:add_s1_grad_scripted	   2584.05 ns	       114%
+Autograd Cost                 	          Ubuntu:py:add_s1_grad_scripted	   2769.63 ns	       113%
+Autograd Cost                 	      MacBookPro:py:add_s1_grad_scripted	   2868.69 ns	       205%
+Autograd Cost                 	            RaspberryPi4:cpp:add_s1_grad	   7328.31 ns	       102%
+Autograd Cost                 	             RaspberryPi4:py:add_s1_grad	   8580.48 ns	        61%
+Autograd Cost                 	    RaspberryPi4:py:add_s1_grad_scripted	  11237.98 ns	       118%
+```
+
+### Framework Cost - Autograd Dispatching (simple add case)
+
+This is a type of PyTorch framework cost. Even with the Autograd mode turned off, it still dispatches operator calls into "Autograd Kernel", which checks the Autograd mode, only to find out it's disabled and does nothing in most cases.
+
+This cost can only be measured in C++ code, using the "AutoNonVariableTypeMode" guard.
+We measure it by comparing the latency of "XXX_novar" with that of "XXX".
+It varies from 48ns to 181ns, except for Raspberry Pi:
+```
+Autograd Dispatching Cost     	   MacBookPro:cpp:add_s1_nograd_outplace	     48.67 ns	        10%
+Autograd Dispatching Cost     	        Linux:cpp:add_s1_nograd_outplace	     69.11 ns	        10%
+Autograd Dispatching Cost     	          WSL:cpp:add_s1_nograd_outplace	    110.01 ns	        13%
+Autograd Dispatching Cost     	       Ubuntu:cpp:add_s1_nograd_outplace	    181.13 ns	        16%
+Autograd Dispatching Cost     	 RaspberryPi4:cpp:add_s1_nograd_outplace	    732.65 ns	        21%
+```
+
+### Framework Cost - Output Allocation (simple add case)
+
+We measure the cost of allocating result tensor by comparing the latency of the simple add case "torch.add(a, b)" with that of the outplace version "torch.add(a, b, out=c)".
+Most samples fall into the range of 700ns ~ 1000ns, which seems to be the cost of allocating a size-1 tensor in PyTorch.
+```
+Output Allocation Cost        	                   WSL:cpp:add_s1_nograd	    409.17 ns	        43%
+Output Allocation Cost        	                 Linux:cpp:add_s1_nograd	    614.69 ns	        80%
+Output Allocation Cost        	    MacBookPro:py:add_s1_nograd_scripted	    708.29 ns	       103%
+Output Allocation Cost        	                Ubuntu:cpp:add_s1_nograd	    745.84 ns	        56%
+Output Allocation Cost        	        Ubuntu:py:add_s1_nograd_scripted	    747.36 ns	        44%
+Output Allocation Cost        	            MacBookPro:cpp:add_s1_nograd	    792.54 ns	       147%
+Output Allocation Cost        	             MacBookPro:py:add_s1_nograd	    798.71 ns	        80%
+Output Allocation Cost        	                    WSL:py:add_s1_nograd	    839.67 ns	        48%
+Output Allocation Cost        	           WSL:py:add_s1_nograd_scripted	    935.60 ns	        69%
+Output Allocation Cost        	                 Ubuntu:py:add_s1_nograd	    990.51 ns	        41%
+Output Allocation Cost        	         Linux:py:add_s1_nograd_scripted	   1206.43 ns	       114%
+Output Allocation Cost        	                  Linux:py:add_s1_nograd	   1427.27 ns	        74%
+Output Allocation Cost        	          RaspberryPi4:cpp:add_s1_nograd	   3054.49 ns	        74%
+Output Allocation Cost        	  RaspberryPi4:py:add_s1_nograd_scripted	   3272.29 ns	        52%
+Output Allocation Cost        	           RaspberryPi4:py:add_s1_nograd	   5453.58 ns	        63%
 ```
 
 ### Costs relative to larger workload
@@ -489,73 +489,73 @@ MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0)
 C++
 ==========================================================================================
                                name              samples/sec                       ns
-       add_s1_nograd_outplace_novar                290512.88                  3442.19
-             add_s1_nograd_outplace                236918.15                  4220.87
-                      add_s1_nograd                137170.65                  7290.19
-                        add_s1_grad                 69173.50                 14456.40
+       add_s1_nograd_outplace_novar                268457.54                  3724.98
+             add_s1_nograd_outplace                245540.52                  4072.65
+                      add_s1_nograd                141569.93                  7063.65
+                        add_s1_grad                 68228.98                 14656.53
 
-       mm_s64_nograd_novar_outplace                  2277.92                438996.33
-                mm_s64_nograd_novar                  2254.80                443498.63
-                        mm_s64_grad                  2177.88                459161.82
+       mm_s64_nograd_novar_outplace                  6753.80                148064.87
+                mm_s64_nograd_novar                  6530.55                153126.36
+                        mm_s64_grad                  5867.28                170436.73
 
-      mm_s256_nograd_novar_outplace                    34.83              28706885.04
-               mm_s256_nograd_novar                    34.81              28726573.32
-                       mm_s256_grad                    35.11              28479562.97
+      mm_s256_nograd_novar_outplace                   355.58               2812271.38
+               mm_s256_nograd_novar                   115.15               8683984.64
+                       mm_s256_grad                    68.45              14609504.62
 
 ==========================================================================================
 Python (1.6.0a0+b31f58d)
 ==========================================================================================
                                name              samples/sec                       ns
-    add_s1_nograd_outplace_scripted                148738.03                  6723.23
-             add_s1_nograd_scripted                103788.81                  9634.95
-               add_s1_grad_scripted                 47433.26                 21082.25
+    add_s1_nograd_outplace_scripted                173160.64                  5774.98
+             add_s1_nograd_scripted                110560.65                  9044.81
+               add_s1_grad_scripted                 47782.23                 20928.28
 
-             add_s1_nograd_outplace                118752.27                  8420.89
-                      add_s1_nograd                 70153.88                 14254.38
-                        add_s1_grad                 45805.02                 21831.67
+             add_s1_nograd_outplace                119729.91                  8352.13
+                      add_s1_nograd                 66702.82                 14991.87
+                        add_s1_grad                 41910.41                 23860.42
 
-             mm_s64_nograd_outplace                  2266.38                441232.06
-                      mm_s64_nograd                  2231.85                448058.12
-                        mm_s64_grad                  2159.71                463026.15
+             mm_s64_nograd_outplace                  6476.25                154410.34
+                      mm_s64_nograd                  6043.35                165471.26
+                        mm_s64_grad                  5561.24                179816.07
 
-            mm_s256_nograd_outplace                    34.77              28762320.43
-                     mm_s256_nograd                    34.90              28649732.47
-                       mm_s256_grad                    34.70              28815683.72
+            mm_s256_nograd_outplace                   180.21               5548988.28
+                     mm_s256_nograd                   133.61               7484726.61
+                       mm_s256_grad                   151.64               6594630.33
 
 ==========================================================================================
 MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 C++
 ==========================================================================================
                                name              samples/sec                       ns
-       add_s1_nograd_outplace_novar                294777.29                  3392.39
-             add_s1_nograd_outplace                245157.30                  4079.01
-                      add_s1_nograd                140475.52                  7118.68
-                        add_s1_grad                 68450.60                 14609.08
+       add_s1_nograd_outplace_novar                273758.63                  3652.85
+             add_s1_nograd_outplace                247652.15                  4037.92
+                      add_s1_nograd                145477.95                  6873.89
+                        add_s1_grad                 72019.59                 13885.11
 
-       mm_s64_nograd_novar_outplace                  2229.72                448486.08
-                mm_s64_nograd_novar                  2208.35                452827.33
-                        mm_s64_grad                  2137.29                467881.74
+       mm_s64_nograd_novar_outplace                  6736.04                148455.24
+                mm_s64_nograd_novar                  6523.60                153289.66
+                        mm_s64_grad                  5900.11                169488.30
 
-      mm_s256_nograd_novar_outplace                    34.91              28647558.56
-               mm_s256_nograd_novar                    34.90              28651011.17
-                       mm_s256_grad                    35.04              28539716.73
+      mm_s256_nograd_novar_outplace                   108.19               9243243.86
+               mm_s256_nograd_novar                   107.09               9337744.25
+                       mm_s256_grad                   109.14               9162856.26
 
 ==========================================================================================
 MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 Python (1.6.0a0+b31f58d)
 ==========================================================================================
                                name              samples/sec                       ns
-    add_s1_nograd_outplace_scripted                171189.37                  5841.48
-             add_s1_nograd_scripted                105548.20                  9474.34
-               add_s1_grad_scripted                 48773.34                 20503.00
+    add_s1_nograd_outplace_scripted                153676.13                  6507.19
+             add_s1_nograd_scripted                104349.39                  9583.19
+               add_s1_grad_scripted                 49705.39                 20118.54
 
-             add_s1_nograd_outplace                113732.86                  8792.53
-                      add_s1_nograd                 72117.80                 13866.20
-                        add_s1_grad                 42644.15                 23449.87
+             add_s1_nograd_outplace                119044.35                  8400.23
+                      add_s1_nograd                 71429.00                 13999.92
+                        add_s1_grad                 41954.80                 23835.18
 
-             mm_s64_nograd_outplace                  2268.44                440832.54
-                      mm_s64_nograd                  2232.76                447875.20
-                        mm_s64_grad                  2168.17                461219.39
+             mm_s64_nograd_outplace                  6478.12                154365.83
+                      mm_s64_nograd                  6183.39                161723.70
+                        mm_s64_grad                  5615.12                178090.44
 
-            mm_s256_nograd_outplace                    34.90              28649804.37
-                     mm_s256_nograd                    34.93              28631541.13
-                       mm_s256_grad                    32.66              30618404.60
+            mm_s256_nograd_outplace                   107.95               9263914.08
+                     mm_s256_nograd                   105.06               9518714.99
+                       mm_s256_grad                   105.42               9486219.66
 ```
