@@ -6,7 +6,7 @@ ROOT="$( cd "$(dirname "$0")"; pwd -P)"
 
 cd $ROOT
 
-cat README.md | awk -f <(cat - <<-'EOF'
+cat microbench.md | awk -f <(cat - <<-'EOF'
 /###/ {
   cpu = $2
 }

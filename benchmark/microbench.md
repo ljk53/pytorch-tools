@@ -2,27 +2,27 @@
 
 ### Run on Linux
 ```bash
-./run.sh
+./microbench.sh
 ```
 
 ### Run on MacOS
 ```bash
-LIBTORCH=macos ./run.sh
+LIBTORCH=macos ./microbench.sh
 ```
 
 ### Run on Raspberry Pi
 ```bash
-LIBTORCH=rpi CXX11_ABI=1 ./run.sh
+LIBTORCH=rpi CXX11_ABI=1 ./microbench.sh
 ```
 
 ### Run with locally built LibTorch
 ```bash
-LIBTORCH=local ./run.sh
+LIBTORCH=local ./microbench.sh
 ```
 
 ### Aggregate benchmark results in this document
 ```bash
-./aggregates.sh
+./microbench_aggregates.sh
 ```
 
 ## Metric Keywords

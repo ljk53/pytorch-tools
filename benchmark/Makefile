@@ -4,7 +4,7 @@ CXX          ?= clang++
 CXX11_ABI    ?= 0
 PYTORCH      ?= ../../pytorch
 
-all : microbench
+all : microbench boxing
 
 macos/libtorch :
 	curl -LsO https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.6.0.zip
@@ -24,7 +24,6 @@ local/libtorch :
 
 microbench : microbench.cpp $(LIBTORCH)/libtorch
 	$(CXX) -std=c++14 -O3 \
-	-I .. \
 	-I $(LIBTORCH)/libtorch/include \
 	-I $(LIBTORCH)/libtorch/include/torch/csrc/api/include \
 	-L $(LIBTORCH)/libtorch/lib \
@@ -34,5 +33,18 @@ microbench : microbench.cpp $(LIBTORCH)/libtorch
 	-lc10 -ltorch -ltorch_cpu \
 	-D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
 
+boxing : boxing.cpp $(LIBTORCH)/libtorch
+	$(CXX) -std=c++14 -O3 \
+	-I $(LIBTORCH)/libtorch/include \
+	-I $(LIBTORCH)/libtorch/include/torch/csrc/api/include \
+	-L $(LIBTORCH)/libtorch/lib \
+	boxing.cpp \
+	-o $@ \
+	-Wl,-rpath,$(LIBTORCH)/libtorch/lib \
+	-lc10 -ltorch -ltorch_cpu \
+	-D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
+
 clean:
-	rm -rf microbench linux libtorch*
+	rm -rf macos linux rpi local libtorch*
+	rm -rf microbench
+	rm -rf boxing
