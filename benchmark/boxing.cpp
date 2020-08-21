@@ -1,31 +1,6 @@
-#include <chrono>
 #include <iostream>
-
 #include <torch/script.h>
-
-using namespace std::chrono;
-
-void report(const std::string& name, high_resolution_clock::time_point start, int count) {
-  duration<double> time_span =
-      duration_cast<duration<double>>(high_resolution_clock::now() - start);
-  std::cout << std::setw(45) << std::fixed << std::setprecision(2)
-            << name
-            << std::setw(25) << count / time_span.count()
-            << std::setw(25) << time_span.count() / count * 1e9
-            << std::endl;
-}
-
-#define BENCHMARK(N, C, F)                                                    \
-  {                                                                           \
-    for (int i = 0; i < C / 2; ++i) {  /* warm up */                          \
-      F                                                                       \
-    }                                                                         \
-    high_resolution_clock::time_point start = high_resolution_clock::now();   \
-    for (int i = 0; i < C; ++i) {                                             \
-      F                                                                       \
-    }                                                                         \
-    report(N, start, C);                                                      \
-  }
+#include "common.h"
 
 void add_s1_nograd_outplace_novar(int count) {
   torch::NoGradGuard nograd_guard;
@@ -34,9 +9,9 @@ void add_s1_nograd_outplace_novar(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar", count, {
+  benchmark("add_s1_nograd_outplace_novar", count, [&]() {
     at::add_out(c, a, b);
-  })
+  });
 }
 
 template<class... Args>
@@ -54,12 +29,12 @@ void add_s1_nograd_outplace_novar_boxing_1x1x100(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_1x1x100", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_1x1x100", count, [&]() {
     for (int i = 0; i < 100; i++) {
       boxArgs(a);
     }
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_2x1x10(int count) {
@@ -69,12 +44,12 @@ void add_s1_nograd_outplace_novar_boxing_2x1x10(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_2x1x10", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_2x1x10", count, [&]() {
     for (int i = 0; i < 10; i++) {
       boxArgs(a, b);
     }
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_4x1(int count) {
@@ -84,10 +59,10 @@ void add_s1_nograd_outplace_novar_boxing_4x1(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_4x1", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_4x1", count, [&]() {
     boxArgs(a, b, c, 1.0);
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_4x2(int count) {
@@ -97,11 +72,11 @@ void add_s1_nograd_outplace_novar_boxing_4x2(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_4x2", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_4x2", count, [&]() {
     boxArgs(a, b, c, 1.0,
             a, b, c, 1.0);
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_4x4(int count) {
@@ -111,13 +86,13 @@ void add_s1_nograd_outplace_novar_boxing_4x4(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_4x4", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_4x4", count, [&]() {
     boxArgs(a, b, c, 1.0,
             a, b, c, 1.0,
             a, b, c, 1.0,
             a, b, c, 1.0);
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_4x8(int count) {
@@ -127,7 +102,7 @@ void add_s1_nograd_outplace_novar_boxing_4x8(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_4x8", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_4x8", count, [&]() {
     boxArgs(a, b, c, 1.0,
             a, b, c, 1.0,
             a, b, c, 1.0,
@@ -137,7 +112,7 @@ void add_s1_nograd_outplace_novar_boxing_4x8(int count) {
             a, b, c, 1.0,
             a, b, c, 1.0);
     at::add_out(c, a, b);
-  })
+  });
 }
 
 #define DEFINE_ARGS(_) \
@@ -154,12 +129,12 @@ void add_s1_nograd_outplace_novar_boxing_8(int count) {
   DEFINE_ARGS()
   DEFINE_ARGS(2)
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_8", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_8", count, [&]() {
     boxArgs(
         REF_ARGS(),
         REF_ARGS(2));
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_16(int count) {
@@ -170,14 +145,14 @@ void add_s1_nograd_outplace_novar_boxing_16(int count) {
   DEFINE_ARGS(3)
   DEFINE_ARGS(4)
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_16", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_16", count, [&]() {
     boxArgs(
         REF_ARGS(),
         REF_ARGS(2),
         REF_ARGS(3),
         REF_ARGS(4));
     at::add_out(c, a, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar_boxing_32(int count) {
@@ -192,7 +167,7 @@ void add_s1_nograd_outplace_novar_boxing_32(int count) {
   DEFINE_ARGS(7)
   DEFINE_ARGS(8)
 
-  BENCHMARK("add_s1_nograd_outplace_novar_boxing_32", count, {
+  benchmark("add_s1_nograd_outplace_novar_boxing_32", count, [&]() {
     boxArgs(
         REF_ARGS(),
         REF_ARGS(2),
@@ -203,7 +178,7 @@ void add_s1_nograd_outplace_novar_boxing_32(int count) {
         REF_ARGS(7),
         REF_ARGS(8));
     at::add_out(c, a, b);
-  })
+  });
 }
 
 int main() {

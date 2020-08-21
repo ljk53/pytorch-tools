@@ -1,47 +1,15 @@
-#include <chrono>
 #include <iostream>
-
 #include <torch/script.h>
-
-using namespace std::chrono;
-
-void report_header() {
-  std::cout << std::setw(35) << "name"
-            << std::setw(25) << "samples/sec"
-            << std::setw(25) << "ns"
-            << std::endl;
-}
-
-void report(const std::string& name, high_resolution_clock::time_point start, int count) {
-  duration<double> time_span =
-      duration_cast<duration<double>>(high_resolution_clock::now() - start);
-  std::cout << std::setw(35) << std::fixed << std::setprecision(2)
-            << name
-            << std::setw(25) << count / time_span.count()
-            << std::setw(25) << time_span.count() / count * 1e9
-            << std::endl;
-}
-
-#define BENCHMARK(N, C, F)                                                    \
-  {                                                                           \
-    for (int i = 0; i < C / 2; ++i) {  /* warm up */                          \
-      F                                                                       \
-    }                                                                         \
-    high_resolution_clock::time_point start = high_resolution_clock::now();   \
-    for (int i = 0; i < C; ++i) {                                             \
-      F                                                                       \
-    }                                                                         \
-    report(N, start, C);                                                      \
-  }
+#include "common.h"
 
 void add_s1_grad(int count) {
   auto a = torch::ones({1}, at::TensorOptions().requires_grad(true));
   auto b = torch::ones({1}, at::TensorOptions().requires_grad(true));
   auto c = a;
 
-  BENCHMARK("add_s1_grad", count, {
+  benchmark("add_s1_grad", count, [&]() {
     c = at::add(c, b);
-  })
+  });
 }
 
 void add_s1_nograd(int count) {
@@ -50,9 +18,9 @@ void add_s1_nograd(int count) {
   auto b = torch::ones({1});
   auto c = a;
 
-  BENCHMARK("add_s1_nograd", count, {
+  benchmark("add_s1_nograd", count, [&]() {
     c = at::add(c, b);
-  })
+  });
 }
 
 void add_s1_nograd_outplace(int count) {
@@ -61,10 +29,10 @@ void add_s1_nograd_outplace(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace", count, {
+  benchmark("add_s1_nograd_outplace", count, [&]() {
     at::add_out(c, a, b);
     std::swap(a, c);
-  })
+  });
 }
 
 void add_s1_nograd_outplace_novar(int count) {
@@ -74,19 +42,19 @@ void add_s1_nograd_outplace_novar(int count) {
   auto b = torch::ones({1});
   auto c = torch::empty({1});
 
-  BENCHMARK("add_s1_nograd_outplace_novar", count, {
+  benchmark("add_s1_nograd_outplace_novar", count, [&]() {
     at::add_out(c, a, b);
     std::swap(a, c);
-  })
+  });
 }
 
 void mm_sN_grad(int count, int N) {
   auto a = torch::ones({N, N}, at::TensorOptions().requires_grad(true));
   auto b = torch::ones({N, N}, at::TensorOptions().requires_grad(true));
 
-  BENCHMARK("mm_s" + std::to_string(N) + "_grad", count, {
+  benchmark("mm_s" + std::to_string(N) + "_grad", count, [&]() {
     auto c = at::mm(a, b);
-  })
+  });
 }
 
 void mm_sN_nograd_novar(int count, int N) {
@@ -95,9 +63,9 @@ void mm_sN_nograd_novar(int count, int N) {
   auto a = torch::ones({N, N}, at::TensorOptions().requires_grad(false));
   auto b = torch::ones({N, N}, at::TensorOptions().requires_grad(false));
 
-  BENCHMARK("mm_s" + std::to_string(N) + "_nograd_novar", count, {
+  benchmark("mm_s" + std::to_string(N) + "_nograd_novar", count, [&]() {
     auto c = at::mm(a, b);
-  })
+  });
 }
 
 void mm_sN_nograd_novar_outplace(int count, int N) {
@@ -107,9 +75,9 @@ void mm_sN_nograd_novar_outplace(int count, int N) {
   auto b = torch::ones({N, N}, at::TensorOptions().requires_grad(false));
   auto c = torch::empty({N, N}, at::TensorOptions().requires_grad(false));
 
-  BENCHMARK("mm_s" + std::to_string(N) + "_nograd_novar_outplace", count, {
+  benchmark("mm_s" + std::to_string(N) + "_nograd_novar_outplace", count, [&]() {
     at::mm_out(c, a, b);
-  })
+  });
 }
 
 int main() {

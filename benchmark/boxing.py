@@ -1,18 +1,6 @@
 import time
 import torch
-
-
-def report(name, start, count):
-    duration = time.time() - start
-    print("{:>35}{:>25.2f}{:>25.2f}".format(
-        name, count / duration, duration / count * 1e9))
-
-
-def benchmark(name, fn, count):
-    fn()  # warm up
-    start = time.time()
-    fn()
-    report(name, start, count)
+from common import *
 
 
 def add_s1_nograd_outplace(count):
@@ -30,4 +18,4 @@ def add_s1_nograd_outplace(count):
 
 
 if __name__ == "__main__":
-    add_s1_nograd_outplace(100000000)
+    add_s1_nograd_outplace(10000)

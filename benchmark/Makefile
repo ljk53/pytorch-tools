@@ -4,6 +4,15 @@ CXX          ?= clang++
 CXX11_ABI    ?= 0
 PYTORCH      ?= ../../pytorch
 
+CXX_FLAGS     = -std=c++14 -O3 -D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
+
+INCLUDE_FLAGS = -I $(LIBTORCH)/libtorch/include \
+                -I $(LIBTORCH)/libtorch/include/torch/csrc/api/include
+
+LDFLAGS       = -L $(LIBTORCH)/libtorch/lib \
+                -Wl,-rpath,$(LIBTORCH)/libtorch/lib \
+	            -lc10 -ltorch -ltorch_cpu
+
 all : microbench boxing
 
 macos/libtorch :
@@ -23,26 +32,10 @@ local/libtorch :
 	ln -s $(PYTORCH)/torch local/libtorch
 
 microbench : microbench.cpp $(LIBTORCH)/libtorch
-	$(CXX) -std=c++14 -O3 \
-	-I $(LIBTORCH)/libtorch/include \
-	-I $(LIBTORCH)/libtorch/include/torch/csrc/api/include \
-	-L $(LIBTORCH)/libtorch/lib \
-	microbench.cpp \
-	-o $@ \
-	-Wl,-rpath,$(LIBTORCH)/libtorch/lib \
-	-lc10 -ltorch -ltorch_cpu \
-	-D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
+	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) microbench.cpp -o $@
 
 boxing : boxing.cpp $(LIBTORCH)/libtorch
-	$(CXX) -std=c++14 -O3 \
-	-I $(LIBTORCH)/libtorch/include \
-	-I $(LIBTORCH)/libtorch/include/torch/csrc/api/include \
-	-L $(LIBTORCH)/libtorch/lib \
-	boxing.cpp \
-	-o $@ \
-	-Wl,-rpath,$(LIBTORCH)/libtorch/lib \
-	-lc10 -ltorch -ltorch_cpu \
-	-D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
+	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) boxing.cpp -o $@
 
 clean:
 	rm -rf macos linux rpi local libtorch*

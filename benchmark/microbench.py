@@ -1,23 +1,6 @@
 import time
 import torch
-
-
-def report_header():
-    print("{:>35}{:>25}{:>25}".format(
-        "name", "samples/sec", "ns"))
-
-
-def report(name, start, count):
-    duration = time.time() - start
-    print("{:>35}{:>25.2f}{:>25.2f}".format(
-        name, count / duration, duration / count * 1e9))
-
-
-def benchmark(name, fn, count):
-    fn()  # warm up
-    start = time.time()
-    fn()
-    report(name, start, count)
+from common import *
 
 
 def add_s1_grad(count):
