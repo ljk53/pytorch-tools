@@ -13,7 +13,7 @@ LDFLAGS       = -L $(LIBTORCH)/libtorch/lib \
                 -Wl,-rpath,$(LIBTORCH)/libtorch/lib \
 	            -lc10 -ltorch -ltorch_cpu
 
-all : microbench boxing
+all : microbench boxing matrix_indexing
 
 macos/libtorch :
 	curl -LsO https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.6.0.zip
@@ -31,13 +31,17 @@ local/libtorch :
 	mkdir local
 	ln -s $(PYTORCH)/torch local/libtorch
 
-microbench : microbench.cpp $(LIBTORCH)/libtorch
+microbench : microbench.cpp common.h $(LIBTORCH)/libtorch
 	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) microbench.cpp -o $@
 
-boxing : boxing.cpp $(LIBTORCH)/libtorch
+boxing : boxing.cpp common.h $(LIBTORCH)/libtorch
 	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) boxing.cpp -o $@
+
+matrix_indexing : matrix_indexing.cpp common.h $(LIBTORCH)/libtorch
+	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) matrix_indexing.cpp -o $@
 
 clean:
 	rm -rf macos linux rpi local libtorch*
 	rm -rf microbench
 	rm -rf boxing
+	rm -rf matrix_indexing
