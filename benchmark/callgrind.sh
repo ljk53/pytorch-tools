@@ -6,8 +6,38 @@ ROOT="$( cd "$(dirname "$0")"; pwd -P)"
 
 cd $ROOT
 
-make
+use_prebuilt_libtorch() {
+  make callgrind
+  BIN=./callgrind
+}
 
-valgrind --tool=callgrind --callgrind-out-file=callgrind.out.txt ./callgrind --instr-atstart=no
+use_local_libtorch() {
+  $ROOT/build_pytorch.sh
 
-callgrind_annotate callgrind.out.txt
+  LIBTORCH=local make callgrind
+  BIN=./callgrind
+}
+
+# On some platforms the ad-hoc makefile doesn't always work, where we can try this one...
+use_local_libtorch_cmake() {
+  $ROOT/build_pytorch.sh
+  BUILD_ROOT=$ROOT/build
+
+  pushd $ROOT
+  rm -rf $BUILD_ROOT && mkdir -p $BUILD_ROOT && cd $BUILD_ROOT
+  cmake .. -DCMAKE_PREFIX_PATH=$ROOT/pytorch/torch -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  make VERBOSE=1
+  popd
+  BIN=$BUILD_ROOT/callgrind
+}
+
+use_local_libtorch
+
+valgrind \
+  --tool=callgrind \
+  --callgrind-out-file=callgrind.out.txt \
+  --dump-line=yes \
+  $BIN \
+  --instr-atstart=no
+
+callgrind_annotate --auto=yes --include=pytorch callgrind.out.txt
