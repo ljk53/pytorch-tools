@@ -3,6 +3,7 @@
 set -ue -o pipefail
 
 ROOT="$( cd "$(dirname "$0")"; pwd -P)"
+PYTORCH_ROOT="${PYTORCH_ROOT:-$ROOT/pytorch}"
 
 use_prebuilt_libtorch() {
   cd $ROOT
@@ -19,7 +20,6 @@ use_local_libtorch() {
 # On some platforms the ad-hoc makefile doesn't always work, where we can try this one...
 use_local_libtorch_cmake() {
   BUILD_ROOT=$ROOT/build
-  PYTORCH_ROOT="${PYTORCH_ROOT:-$ROOT/pytorch}"
 
   rm -rf $BUILD_ROOT && mkdir -p $BUILD_ROOT
   pushd $BUILD_ROOT
