@@ -37,7 +37,14 @@ valgrind \
   --tool=callgrind \
   --callgrind-out-file=callgrind.out.txt \
   --dump-line=yes \
-  $BIN \
-  --instr-atstart=no
+  --instr-atstart=no \
+  $BIN
 
-callgrind_annotate --auto=yes --include=pytorch callgrind.out.txt
+callgrind_annotate \
+  --auto=yes \
+  --inclusive=yes \
+  --tree=both \
+  --show-percs=yes \
+  --context=16 \
+  --include=pytorch \
+  callgrind.out.txt

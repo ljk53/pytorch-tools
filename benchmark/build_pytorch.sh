@@ -25,7 +25,7 @@ checkout_pytorch() {
 
 build_pytorch() {
   echo "Building PyTorch..."
-  echo "!!! You might need run `python setup.py clean` if the last build failed."
+  echo "!!! You might need run 'python setup.py clean' if the last build failed."
 
   cd $PYTORCH_ROOT
 

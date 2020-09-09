@@ -28,7 +28,7 @@ rpi/libtorch :
 	unzip -qq -o libtorch-rpi-shared-without-deps-1.6.0.zip -d rpi
 
 local/libtorch :
-	rm -rf local && mkdir local
+	mkdir -p local
 	ln -s ../$(PYTORCH)/torch local/libtorch
 
 microbench : microbench.cpp common.h $(LIBTORCH)/libtorch
