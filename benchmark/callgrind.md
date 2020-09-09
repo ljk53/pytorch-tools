@@ -16,18 +16,19 @@ brew install --HEAD LouisBrunner/valgrind/valgrind
 
 ## Build & Run
 
-### Use locally built libtorch
+### Build libtorch locally
 This script will checkout pytorch source code and build it from scratch.
 You can use this workflow to modify pytorch code locally and run the benchmark against the modified version.
 ```bash
 LIBTORCH=local ./callgrind.sh
 ```
-If you already a working copy of PyTorch repo, you could use it instead:
+If you already have a working copy of PyTorch repo, you could use it instead:
 ```bash
 PYTORCH_ROOT=<your_pytorch_src_repo> LIBTORCH=local ./callgrind.sh
 ```
 
-### Use prebuilt libtorch downloaded from official website
+### Download prebuilt libtorch from the official website
+This is convenient for quick experiment if you don't need modify/build PyTorch code locally. Note that the prebuilt library doesn't contain debug symbols so you won't be able to see source code level annotation in the benchmark results.
 ```bash
 # On Linux
 ./callgrind.sh
