@@ -6,7 +6,7 @@ ROOT="$( cd "$(dirname "$0")"; pwd -P)"
 
 cd $ROOT
 
-make
+make matrix_indexing
 
 echo "=========================================================================================================================================="
 echo "Python ($(python -c 'import torch; print(torch.version.__version__)'))"

@@ -3,8 +3,8 @@
 
 set -eux
 
-PRJ_ROOT="$( cd "$(dirname "$0")" ; pwd -P)"
-PYTORCH_ROOT="${PYTORCH_ROOT:-$PRJ_ROOT/pytorch}"
+ROOT="$( cd "$(dirname "$0")" ; pwd -P)"
+PYTORCH_ROOT="${PYTORCH_ROOT:-$ROOT/pytorch}"
 
 install_dependencies() {
   # Follow PyTorch local build instruction: https://github.com/pytorch/pytorch#from-source

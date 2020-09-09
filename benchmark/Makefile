@@ -2,7 +2,7 @@ LIBTORCH     ?= linux
 CC           ?= clang
 CXX          ?= clang++
 CXX11_ABI    ?= 0
-PYTORCH      ?= ./pytorch
+PYTORCH_ROOT ?= $(CURDIR)/pytorch
 
 CXX_FLAGS     = -std=c++14 -O3 -D_GLIBCXX_USE_CXX11_ABI=$(CXX11_ABI)
 
@@ -29,7 +29,7 @@ rpi/libtorch :
 
 local/libtorch :
 	mkdir -p local
-	ln -s ../$(PYTORCH)/torch local/libtorch
+	ln -s $(PYTORCH_ROOT)/torch local/libtorch
 
 microbench : microbench.cpp common.h $(LIBTORCH)/libtorch
 	$(CXX) $(CXX_FLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) microbench.cpp -o $@

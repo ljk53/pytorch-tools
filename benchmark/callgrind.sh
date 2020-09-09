@@ -4,34 +4,37 @@ set -ue -o pipefail
 
 ROOT="$( cd "$(dirname "$0")"; pwd -P)"
 
-cd $ROOT
-
 use_prebuilt_libtorch() {
+  cd $ROOT
   make callgrind
-  BIN=./callgrind
+  BIN=$ROOT/callgrind
 }
 
 use_local_libtorch() {
-  $ROOT/build_pytorch.sh
-
+  cd $ROOT
   LIBTORCH=local make callgrind
-  BIN=./callgrind
+  BIN=$ROOT/callgrind
 }
 
 # On some platforms the ad-hoc makefile doesn't always work, where we can try this one...
 use_local_libtorch_cmake() {
-  $ROOT/build_pytorch.sh
   BUILD_ROOT=$ROOT/build
+  PYTORCH_ROOT="${PYTORCH_ROOT:-$ROOT/pytorch}"
 
-  pushd $ROOT
-  rm -rf $BUILD_ROOT && mkdir -p $BUILD_ROOT && cd $BUILD_ROOT
-  cmake .. -DCMAKE_PREFIX_PATH=$ROOT/pytorch/torch -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  rm -rf $BUILD_ROOT && mkdir -p $BUILD_ROOT
+  pushd $BUILD_ROOT
+  cmake .. -DCMAKE_PREFIX_PATH=$PYTORCH_ROOT/torch -DCMAKE_BUILD_TYPE=RelWithDebInfo
   make VERBOSE=1
   popd
   BIN=$BUILD_ROOT/callgrind
 }
 
-use_local_libtorch
+if [ "${LIBTORCH:-}" == "local" ]; then
+  $ROOT/build_pytorch.sh
+  use_local_libtorch
+else
+  use_prebuilt_libtorch
+fi
 
 valgrind \
   --tool=callgrind \
@@ -46,5 +49,5 @@ callgrind_annotate \
   --tree=both \
   --show-percs=yes \
   --context=16 \
-  --include=pytorch \
+  --include=$PYTORCH_ROOT \
   callgrind.out.txt
