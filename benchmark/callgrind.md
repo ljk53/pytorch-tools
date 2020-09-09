@@ -61,3 +61,7 @@ sudo dnf install kcachegrind
 # On Mac
 brew install qcachegrind
 ```
+
+### Visualize callgraph / source code / assembly instructions and etc.
+
+![Kcachegrind Screenshot](callgrind_demo.png?raw=true)

@@ -40,6 +40,8 @@ valgrind \
   --tool=callgrind \
   --callgrind-out-file=callgrind.out.txt \
   --dump-line=yes \
+  --dump-instr=yes \
+  --collect-jumps=yes \
   --instr-atstart=no \
   $BIN
 
