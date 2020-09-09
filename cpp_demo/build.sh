@@ -3,7 +3,7 @@ set -eux
 
 PRJ_ROOT="$( cd "$(dirname "$0")" ; pwd -P)"
 BUILD_ROOT=$PRJ_ROOT/build
-PYTORCH_ROOT="${PYTORCH_ROOT:-$PRJ_ROOT/../pytorch}"
+PYTORCH_ROOT="${PYTORCH_ROOT:-$PRJ_ROOT/pytorch}"
 
 # With "python setup.py develop", C++ headers/libraries are "installed" inside the source tree!
 PYTORCH_BUILD=$PYTORCH_ROOT/build
@@ -28,7 +28,7 @@ checkout_pytorch() {
 
 build_pytorch() {
   echo "Building PyTorch..."
-  echo "!!! You might need run `python setup.py clean` if the last build failed."
+  echo "!!! You might need run 'python setup.py clean' if the last build failed."
 
   cd $PYTORCH_ROOT
   CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"} \
