@@ -31,7 +31,7 @@ use_local_libtorch_cmake() {
 
 if [ "${LIBTORCH:-}" == "local" ]; then
   $ROOT/build_pytorch.sh
-  use_local_libtorch
+  use_local_libtorch_cmake
 else
   use_prebuilt_libtorch
 fi
