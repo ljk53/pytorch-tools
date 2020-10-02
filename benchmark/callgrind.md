@@ -67,6 +67,18 @@ brew install qcachegrind
 
 ![Kcachegrind Screenshot](callgrind_demo.png?raw=true)
 
+#### Call Graph / Callee Map
+
+![Kcachegrind Screenshot](callgrind_demo_1.gif?raw=true)
+
+#### Inclusive Cost / Self Cost / Call Count
+
+![Kcachegrind Screenshot](callgrind_demo_2.gif?raw=true)
+
+#### Source Code / Machine Code
+
+![Kcachegrind Screenshot](callgrind_demo_3.gif?raw=true)
+
 ## Appendix - Setup VNC Server on CentOS Server
 
 ### Setup VNC server and desktop environment
