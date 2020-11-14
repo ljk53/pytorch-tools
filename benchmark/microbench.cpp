@@ -2,6 +2,39 @@
 #include <torch/script.h>
 #include "common.h"
 
+void view_s1(int count) {
+  torch::Tensor a = torch::ones({1});
+  torch::Tensor b;
+
+  benchmark("view_s1", count, [&]() {
+    b = a.view(-1);
+  });
+}
+
+void view_s1_novar(int count) {
+  torch::AutoNonVariableTypeMode non_variable_type_guard;
+  torch::Tensor a = torch::ones({1});
+  torch::Tensor b;
+
+  benchmark("view_s1_novar", count, [&]() {
+    b = a.view(-1);
+  });
+}
+
+void empty_s1(int count) {
+  torch::Tensor a;
+  benchmark("empty_s1", count, [&]() {
+    a = torch::empty({1});
+  });
+}
+
+void empty_s256(int count) {
+  torch::Tensor a;
+  benchmark("empty_s256", count, [&]() {
+    a = torch::empty({256});
+  });
+}
+
 void add_s1_grad(int count) {
   auto a = torch::ones({1}, at::TensorOptions().requires_grad(true));
   auto b = torch::ones({1}, at::TensorOptions().requires_grad(true));
@@ -82,6 +115,14 @@ void mm_sN_nograd_novar_outplace(int count, int N) {
 
 int main() {
   report_header();
+
+  view_s1(5000000);
+  view_s1_novar(5000000);
+  std::cout << std::endl;
+
+  empty_s1(5000000);
+  empty_s256(1000000);
+  std::cout << std::endl;
 
   add_s1_nograd_outplace_novar(1000000);
   add_s1_nograd_outplace(1000000);
