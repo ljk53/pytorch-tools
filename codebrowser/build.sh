@@ -2,6 +2,9 @@
 
 set -ex -o pipefail
 
+# https://serverfault.com/questions/92683/execute-rsync-command-over-ssh-with-an-ssh-agent-via-crontab
+source ${HOME}/.keychain/$(/bin/hostname)-sh
+
 # setup conda: https://unix.stackexchange.com/questions/454957/cron-job-to-run-under-conda-virtual-environment
 # add the following lines to `crontab -e`:
 # SHELL=/bin/bash
