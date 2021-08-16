@@ -119,7 +119,7 @@ index_code_browser_pytorch() {
   BUILD_DIRECTORY=${SOURCE_DIRECTORY}/build
 
   rm -rf ${SOURCE_DIRECTORY}
-  git clone --recursive https://github.com/pytorch/pytorch.git ${SOURCE_DIRECTORY}
+  git clone --depth 1 --recursive https://github.com/pytorch/pytorch.git ${SOURCE_DIRECTORY}
 
   cd ${SOURCE_DIRECTORY}
   python setup.py develop
