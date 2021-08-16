@@ -99,7 +99,9 @@ push_git() {
   cd ${HTML_GIT_ROOT}
   git add -A
   git commit -m "update codebrowser"
-  git pull --rebase
+  git pull --depth 3 --rebase
+  git rev-parse HEAD~3 > .git/shallow
+  git gc --prune=now
   git push
 }
 
