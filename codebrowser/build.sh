@@ -97,6 +97,7 @@ push_git() {
     return
   fi
   cd ${HTML_GIT_ROOT}
+  git config gc.auto 0
   git add -A
   git commit -m "update codebrowser"
   git pull --depth 3 --rebase
