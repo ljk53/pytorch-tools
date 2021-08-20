@@ -89,7 +89,7 @@ clean_git() {
   cd ${HTML_GIT_ROOT}
   git reset --hard
   git clean -fd
-  git pull --rebase
+  git pull --depth 3 --rebase
 }
 
 push_git() {
