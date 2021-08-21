@@ -89,7 +89,7 @@ clean_git() {
   cd ${HTML_GIT_ROOT}
   git reset --hard
   git clean -fd
-  git pull --depth 3 --rebase
+  git pull --rebase
 }
 
 push_git() {
@@ -97,13 +97,19 @@ push_git() {
     return
   fi
   cd ${HTML_GIT_ROOT}
-  git config gc.auto 0
+
+  # rebase again
   git add -A
   git commit -m "update codebrowser"
-  git pull --depth 3 --rebase
-  git rev-parse HEAD~3 > .git/shallow
-  git gc --prune=now
-  git push
+  git pull --rebase
+
+  # remove commit history
+  git checkout --orphan new_master
+  git add -A
+  git commit -am 'initial commit'
+  git branch -D master
+  git branch -m master
+  git push -f origin master
 }
 
 index_code_browser() {
