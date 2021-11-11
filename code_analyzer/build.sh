@@ -124,7 +124,7 @@ check_test_result() {
   fi
 }
 
-install_dependencies
+# install_dependencies
 checkout_pytorch
 build_analyzer
 
