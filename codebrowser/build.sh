@@ -3,6 +3,12 @@
 set -ex -o pipefail
 
 # https://serverfault.com/questions/92683/execute-rsync-command-over-ssh-with-an-ssh-agent-via-crontab
+#
+# Add the following code to .bash_profile:
+#
+#     if [ -x /usr/bin/keychain ]; then
+#       /usr/bin/keychain --quiet --clear $HOME/.ssh/id_rsa
+#     fi
 source ${HOME}/.keychain/$(/bin/hostname)-sh
 
 # setup conda: https://unix.stackexchange.com/questions/454957/cron-job-to-run-under-conda-virtual-environment
@@ -110,6 +116,7 @@ push_git() {
   git branch -D master
   git branch -m master
   git push -f origin master
+  git gc
 }
 
 index_code_browser() {
